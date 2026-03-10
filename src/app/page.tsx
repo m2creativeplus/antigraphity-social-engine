@@ -61,17 +61,20 @@ export default function ContentFactory() {
   };
 
   return (
-    <div className="flex flex-col gap-6 md:grid md:grid-cols-12 md:gap-8 h-full">
+    <div className="relative flex flex-col gap-6 md:grid md:grid-cols-12 md:gap-8 h-full">
+      {/* Background radial gradient for premium feel */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none -z-10 -m-8" />
+      
       {/* Left Column: Creator Panel */}
       <div className="md:col-span-5 lg:col-span-4 flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Content Factory</h1>
+            <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Content Factory</h1>
             <p className="text-muted-foreground">Antigraphity Multi-Agent Engine</p>
           </div>
         </div>
 
-        <Card className="border-primary/20 shadow-md">
+        <Card className="glass-card shadow-lg">
           <CardHeader>
             <CardTitle>Campaign Brief</CardTitle>
             <CardDescription>Enter your core idea. Our AI agents will expand it across all platforms.</CardDescription>
@@ -82,7 +85,7 @@ export default function ContentFactory() {
               <Textarea 
                 id="topic" 
                 placeholder="e.g., Announce the new SNPA printing regulations for local businesses..." 
-                className="min-h-[120px] resize-none"
+                className="min-h-[120px] resize-none bg-background/50 border-white/10 focus-visible:ring-primary/50"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
               />
@@ -123,7 +126,7 @@ export default function ContentFactory() {
               <Label>Platform Distribution</Label>
               <div className="flex flex-wrap gap-2">
                 {['LinkedIn', 'X (Twitter)', 'Facebook', 'Instagram'].map((platform) => (
-                  <div key={platform} className="flex items-center space-x-2 rounded-md border p-2 px-3 bg-muted/50">
+                  <div key={platform} className="flex items-center space-x-2 rounded-md border border-white/10 p-2 px-3 bg-muted/30">
                     <CheckCircle2 className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium">{platform}</span>
                   </div>
@@ -133,9 +136,10 @@ export default function ContentFactory() {
           </CardContent>
           <CardFooter>
             <Button 
-              className="w-full relative overflow-hidden group" 
+              className="w-full relative overflow-hidden group glow-primary font-semibold text-primary-foreground" 
               onClick={handleGenerate}
               disabled={isGenerating}
+              size="lg"
             >
               <span className="relative z-10 flex items-center gap-2">
                 {isGenerating ? (
@@ -153,20 +157,24 @@ export default function ContentFactory() {
       </div>
 
       {/* Right Column: Real-Time Preview Matrix */}
-      <div className="md:col-span-7 lg:col-span-8 flex flex-col min-h-[600px]">
-        <Card className="flex-1 flex flex-col overflow-hidden border-muted">
-          <CardHeader className="border-b bg-muted/30 px-6 py-4">
+      <div className="md:col-span-7 lg:col-span-8 flex flex-col min-h-[600px] z-10">
+        <Card className="flex-1 flex flex-col overflow-hidden glass-card shadow-2xl">
+          <CardHeader className="border-b border-white/10 bg-muted/20 px-6 py-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Real-Time Output Matrix</CardTitle>
-              {isGenerating && <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>}
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" /> Real-Time Output Matrix
+              </CardTitle>
+              {isGenerating && <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse glow-primary"></span>}
             </div>
           </CardHeader>
-          <CardContent className="flex-1 p-0">
-            {!isGenerating && topic === "" ? (
-              <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-muted/5">
-                <Sparkles className="h-12 w-12 mb-4 opacity-20" />
-                <h3 className="text-lg font-medium text-foreground">Awaiting Directive</h3>
-                <p className="max-w-sm mt-2">Enter your topic on the left to activate the Gemini 2.5 Pro multi-agent team.</p>
+          <CardContent className="flex-1 p-0 flex flex-col">
+            {!isGenerating && (!campaignOutputs) && topic === "" ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-transparent">
+                <div className="size-20 rounded-full bg-primary/10 flex items-center justify-center mb-6 border border-primary/20">
+                  <Sparkles className="h-10 w-10 text-primary opacity-50" />
+                </div>
+                <h3 className="text-xl font-medium text-foreground tracking-tight">Awaiting Directive</h3>
+                <p className="max-w-sm mt-2 text-sm leading-relaxed">Enter your topic on the left to activate the Gemini 2.5 Pro multi-agent team.</p>
               </div>
             ) : (
               <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col w-full">
@@ -181,18 +189,21 @@ export default function ContentFactory() {
                 
                 <div className="flex-1 overflow-auto bg-muted/10 p-6">
                   {isGenerating ? (
-                    <div className="h-full flex flex-col items-center justify-center space-y-4">
-                      <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                    <div className="flex-1 flex flex-col items-center justify-center space-y-6 h-full min-h-[400px]">
+                      <div className="relative">
+                        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+                        <div className="absolute inset-0 blur-xl bg-primary/20 rounded-full animate-pulse" />
+                      </div>
                       <div className="text-sm text-center">
-                        <p className="font-medium">Agent 1: Content Strategist active...</p>
-                        <p className="text-muted-foreground animate-pulse">Applying SCALE framework to &quot;{topic.substring(0, 20)}...&quot;</p>
+                        <p className="font-medium text-foreground text-lg">Agent 1: Content Strategist active...</p>
+                        <p className="text-muted-foreground animate-pulse mt-2">Applying SCALE framework to &quot;{topic.substring(0, 20)}...&quot;</p>
                       </div>
                     </div>
                   ) : campaignOutputs ? (
-                    <TabsContent value={activeTab} className="m-0 h-full">
-                      <div className="max-w-xl mx-auto bg-background rounded-xl shadow-sm border p-6 space-y-4">
+                    <TabsContent value={activeTab} className="m-0 flex-1 h-full min-h-[400px]">
+                      <div className="max-w-xl mx-auto rounded-xl shadow-xl border border-white/5 p-6 space-y-4 bg-card/60 backdrop-blur-md">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-muted rounded-full"></div>
+                          <div className="w-12 h-12 bg-primary/20 border border-primary/30 rounded-full flex items-center justify-center"><Sparkles className="h-5 w-5 text-primary"/></div>
                           <div>
                             <div className="font-bold text-sm">Official Institution Name</div>
                             <div className="text-xs text-muted-foreground">Just now • 🌐</div>
